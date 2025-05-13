@@ -2,25 +2,25 @@ from .models import *
 from rest_framework import serializers
 
 
-class UserSerializer(serializers.HyperlinkedModelSerializer):
+class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['email', 'phone', 'fam', 'name', 'otc']
 
 
-class CoordsSerializer(serializers.HyperlinkedModelSerializer):
+class CoordsSerializer(serializers.ModelSerializer):
     class Meta:
         model = Coords
         fields = ['latitude', 'longitude', 'height']
 
 
-class ImagesSerializer(serializers.HyperlinkedModelSerializer):
+class ImagesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Images
         fields = ['img', 'title']
 
 
-class AddedSerializer(serializers.HyperlinkedModelSerializer):
+class AddedSerializer(serializers.ModelSerializer):
     user = UserSerializer()
     coords = CoordsSerializer()
     images = ImagesSerializer(many=True)
@@ -28,12 +28,6 @@ class AddedSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Added
         fields = '__all__'
-        # fields = [
-        #     'user', 'coords',
-        #     'beautyTitle', 'title', 'other_titles', 'connect', 'add_time',
-        #     'level_winter', 'level_summer', 'level_autumn', 'level_spring',
-        # ]
-
 
     def create(self, validated_data):
         user_data = validated_data.pop('user')
