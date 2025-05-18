@@ -1,7 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import AddedSerializer, AddedDetailSerializer
+from .serializers import AddedSerializer, AddedDetailSerializer, AddedSerializerUpdate
 from .models import Added
 
 class SubmitData(APIView):
@@ -53,4 +53,35 @@ class SubmitDataDetail(APIView):
                     "status": 404,
                 },
                 status=status.HTTP_404_NOT_FOUND
+            )
+
+
+
+class SubmitDataUpdate(APIView):
+    def patch(self, request, pk):
+        try:
+            pereval = Added.objects.get(pk=pk)
+        except Added.DoesNotExist:
+            return Response(
+                {"state": 0, "message": "Запись не найдена."},
+                status=status.HTTP_404_NOT_FOUND
+            )
+
+        if pereval.status != 'new':
+            return Response(
+                {"state": 0, "message": "Запись нельзя редактировать, так как она не в статусе 'new'."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+
+        if 'user' in request.data:
+            del request.data['user']
+
+        serializer = AddedSerializerUpdate(pereval, data=request.data, partial=True)
+        if serializer.is_valid():
+            serializer.save()
+            return Response({"state": 1, "message": "Запись успешно обновлена."})
+        else:
+            return Response(
+                {"state": 0, "message": serializer.errors},
+                status=status.HTTP_400_BAD_REQUEST
             )
