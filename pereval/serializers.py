@@ -6,7 +6,17 @@ class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
         fields = ['email', 'phone', 'fam', 'name', 'otc']
-
+    # def create(self, validated_data):
+    #     user, created = User.objects.get_or_create(
+    #         email=validated_data['email'],
+    #         defaults={
+    #             'phone': validated_data.get('phone', ''),
+    #             'fam': validated_data.get('fam', ''),
+    #             'name': validated_data.get('name', ''),
+    #             'otc': validated_data.get('otc', ''),
+    #         }
+    #     )
+    #     return user
 
 class CoordsSerializer(serializers.ModelSerializer):
     class Meta:
@@ -27,18 +37,34 @@ class AddedSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Added
-        fields = '__all__'
+        # fields = '__all__'
+        fields = [
+            'user', 'coords',
+            'beautyTitle', 'title', 'other_titles', 'connect',
+            'level_winter', 'level_summer', 'level_autumn', 'level_spring',
+            'images'
+        ]
 
     def create(self, validated_data):
         user_data = validated_data.pop('user')
         coords_data = validated_data.pop('coords')
         images_data = validated_data.pop('images')
 
-        user = User.objects.create(**user_data)
-        coords = Coords.objects.create(**coords_data)
+        user, _ = User.objects.get_or_create(**user_data)
+        coords, _ = Coords.objects.get_or_create(**coords_data)
         pereval = Added.objects.create(user=user, coords=coords, **validated_data)
 
         for image_data in images_data:
             Images.objects.create(pereval=pereval, **image_data)
 
         return pereval
+
+
+class AddedDetailSerializer(serializers.ModelSerializer):
+    user = UserSerializer()
+    coords = CoordsSerializer()
+    images = ImagesSerializer(many=True)
+
+    class Meta():
+        model = Added
+        fields = '__all__'

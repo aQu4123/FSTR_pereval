@@ -1,8 +1,8 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import AddedSerializer
-
+from .serializers import AddedSerializer, AddedDetailSerializer
+from .models import Added
 
 class SubmitData(APIView):
     def post(self, request):
@@ -39,3 +39,18 @@ class SubmitData(APIView):
             )
 
 
+class SubmitDataDetail(APIView):
+
+    def get(self, request, pk):
+        try:
+            pereval = Added.objects.get(pk=pk)
+            serializer = AddedDetailSerializer(pereval)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Added.DoesNotExist:
+            return Response(
+                {
+                    "message": "Запись не найдена",
+                    "status": 404,
+                },
+                status=status.HTTP_404_NOT_FOUND
+            )
