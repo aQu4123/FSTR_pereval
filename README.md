@@ -38,8 +38,11 @@ http://127.0.0.1:8000/swagger
 Основные эндпоинты
 
 POST   `/api/submitData/` - Добавить новый перевал
+
 GET    `/api/submitData/?user__email=example@mail.ru` - Получить список перевалов по email 
+
 GET    `/api/submitData/<id>/` -  Получить информацию о перевале по ID 
+
 PATCH  `/api/submitData/<id>/` - Обновить перевал (если status = "new") 
 
 Пример POST-запроса
