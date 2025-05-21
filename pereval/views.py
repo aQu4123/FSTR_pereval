@@ -1,10 +1,12 @@
 from rest_framework.views import APIView
+from rest_framework.viewsets import ModelViewSet
 from rest_framework.response import Response
 from rest_framework import status
-from .serializers import AddedSerializer, AddedDetailSerializer, AddedSerializerUpdate
+from .serializers import AddedSerializer, AddedDetailSerializer
 from .models import Added
 
 class SubmitData(APIView):
+
     def post(self, request):
         try:
             serializer = AddedSerializer(data=request.data)
@@ -42,10 +44,9 @@ class SubmitData(APIView):
         email = request.query_params.get('user__email', None)
 
         if not email:
-            return Response(
-                {"message": "Не указан email пользователя", "status": 400},
-                status=status.HTTP_400_BAD_REQUEST
-            )
+            perevals = Added.objects.all()
+            serializer = AddedSerializer(perevals, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
 
         try:
             perevals = Added.objects.filter(user__email=email)
@@ -72,6 +73,7 @@ class SubmitDataDetail(APIView):
             pereval = Added.objects.get(pk=pk)
             serializer = AddedDetailSerializer(pereval)
             return Response(serializer.data, status=status.HTTP_200_OK)
+
         except Added.DoesNotExist:
             return Response(
                 {
@@ -81,9 +83,6 @@ class SubmitDataDetail(APIView):
                 status=status.HTTP_404_NOT_FOUND
             )
 
-
-
-class SubmitDataUpdate(APIView):
     def patch(self, request, pk):
         try:
             pereval = Added.objects.get(pk=pk)
@@ -102,7 +101,7 @@ class SubmitDataUpdate(APIView):
         if 'user' in request.data:
             del request.data['user']
 
-        serializer = AddedSerializerUpdate(pereval, data=request.data, partial=True)
+        serializer = AddedDetailSerializer(pereval, data=request.data, partial=True)
         if serializer.is_valid():
             serializer.save()
             return Response({"state": 1, "message": "Запись успешно обновлена."})
@@ -111,3 +110,4 @@ class SubmitDataUpdate(APIView):
                 {"state": 0, "message": serializer.errors},
                 status=status.HTTP_400_BAD_REQUEST
             )
+

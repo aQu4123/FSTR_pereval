@@ -2,7 +2,7 @@ from django.db import models
 
 
 class User(models.Model):
-    email = models.EmailField(unique=True, verbose_name='Электронная почта')
+    email = models.EmailField(verbose_name='Электронная почта')
     phone = models.CharField(max_length=15, verbose_name='Телефонный номер')
     fam = models.CharField(max_length=100, verbose_name='Фамилия')
     name = models.CharField(max_length=100, verbose_name='Имя')
