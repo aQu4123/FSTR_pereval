@@ -18,12 +18,19 @@ class CoordsSerializer(serializers.ModelSerializer):
 class ImagesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Images
-        fields = ['img', 'title']
+        fields = ['data', 'title']
+
+
+class LevelSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Level
+        fields = ['winter', 'summer', 'autumn', 'spring']
 
 
 class AddedSerializer(serializers.ModelSerializer):
     user = UserSerializer()
     coords = CoordsSerializer()
+    level = LevelSerializer()
     images = ImagesSerializer(many=True)
     add_time = serializers.DateTimeField(read_only=True, format='%Y-%m-%d %H:%M:%S')
     status = serializers.CharField(read_only=True)
@@ -32,9 +39,8 @@ class AddedSerializer(serializers.ModelSerializer):
         model = Added
         # fields = '__all__'
         fields = [
-            'user', 'coords', 'status',
+            'user', 'coords', 'level', 'status',
             'beautyTitle', 'title', 'other_titles', 'connect',
-            'level_winter', 'level_summer', 'level_autumn', 'level_spring',
             'add_time', 'images'
         ]
 
@@ -42,10 +48,11 @@ class AddedSerializer(serializers.ModelSerializer):
         user_data = validated_data.pop('user')
         coords_data = validated_data.pop('coords')
         images_data = validated_data.pop('images')
-
+        level_data = validated_data.pop('level')
         user, _ = User.objects.get_or_create(**user_data)
         coords= Coords.objects.create(**coords_data)
-        pereval = Added.objects.create(user=user, coords=coords, **validated_data)
+        level= Level.objects.create(**level_data)
+        pereval = Added.objects.create(user=user, coords=coords, level=level, **validated_data)
 
         for image_data in images_data:
             Images.objects.create(pereval=pereval, **image_data)
@@ -56,15 +63,15 @@ class AddedSerializer(serializers.ModelSerializer):
 class AddedDetailSerializer(serializers.ModelSerializer):
     user = UserSerializer()
     coords = CoordsSerializer()
+    level = LevelSerializer()
     images = ImagesSerializer(many=True)
     add_time = serializers.DateTimeField(read_only=True, format='%Y-%m-%d %H:%M:%S')
 
     class Meta:
         model = Added
         fields = [
-            'user', 'coords', 'status',
+            'user', 'coords', 'status', 'level',
             'beautyTitle', 'title', 'other_titles', 'connect',
-            'level_winter', 'level_summer', 'level_autumn', 'level_spring',
             'add_time', 'images'
         ]
 
@@ -74,10 +81,6 @@ class AddedDetailSerializer(serializers.ModelSerializer):
         instance.title = validated_data.get('title', instance.title)
         instance.other_titles = validated_data.get('other_titles', instance.other_titles)
         instance.connect = validated_data.get('connect', instance.connect)
-        instance.level_spring = validated_data.get('level_spring', instance.level_spring)
-        instance.level_summer = validated_data.get('level_summer', instance.level_summer)
-        instance.level_autumn = validated_data.get('level_autumn', instance.level_autumn)
-        instance.level_winter = validated_data.get('level_winter', instance.level_winter)
         instance.save()
 
         coords_data = validated_data.get('coords', {})
@@ -86,6 +89,14 @@ class AddedDetailSerializer(serializers.ModelSerializer):
         coords.longitude = coords_data.get('longitude', coords.longitude)
         coords.height = coords_data.get('height', coords.height)
         coords.save()
+
+        level_data = validated_data.get('level', {})
+        level = instance.level
+        level.autumn = level_data.get('autumn', {})
+        level.spring = level_data.get('spring', {})
+        level.summer = level_data.get('summer', {})
+        level.winter = level_data.get('winter', {})
+        level.save()
 
         user_data = validated_data.get('user', {})
         user = instance.user

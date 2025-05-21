@@ -20,6 +20,13 @@ class Coords(models.Model):
         return f"Широта: {self.latitude}, Долгота: {self.longitude}, Высота: {self.height}"
 
 
+class Level(models.Model):
+    winter = models.CharField(max_length=5, blank=True, verbose_name='Уровень сложности зимой')
+    summer = models.CharField(max_length=5, blank=True, verbose_name='Уровень сложности летом')
+    autumn = models.CharField(max_length=5, blank=True, verbose_name='Уровень сложности осенью')
+    spring = models.CharField(max_length=5, blank=True, verbose_name='Уровень сложности весной')
+
+
 class Added(models.Model):
     STATUS_CHOICES = [
         ('new', 'Новая'),
@@ -30,6 +37,7 @@ class Added(models.Model):
     status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='new')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     coords = models.OneToOneField(Coords, on_delete=models.CASCADE)
+    level = models.OneToOneField(Level, on_delete=models.CASCADE)
 
     beautyTitle = models.CharField(max_length=100, verbose_name='Тип местности')
     title = models.CharField(max_length=100, verbose_name='Название')
@@ -37,10 +45,10 @@ class Added(models.Model):
     connect = models.TextField(blank=True, verbose_name='Сопроводительный текст')
     add_time = models.DateTimeField(auto_now_add=True)
 
-    level_winter = models.CharField(max_length=5, blank=True, verbose_name='Уровень сложности зимой')
-    level_summer = models.CharField(max_length=5, blank=True, verbose_name='Уровень сложности летом')
-    level_autumn = models.CharField(max_length=5, blank=True, verbose_name='Уровень сложности осенью')
-    level_spring = models.CharField(max_length=5, blank=True, verbose_name='Уровень сложности весной')
+    # level_winter = models.CharField(max_length=5, blank=True, verbose_name='Уровень сложности зимой')
+    # level_summer = models.CharField(max_length=5, blank=True, verbose_name='Уровень сложности летом')
+    # level_autumn = models.CharField(max_length=5, blank=True, verbose_name='Уровень сложности осенью')
+    # level_spring = models.CharField(max_length=5, blank=True, verbose_name='Уровень сложности весной')
 
     def __str__(self):
         return f"Перевал: {self.title}, Статус: {self.status}"
@@ -48,8 +56,9 @@ class Added(models.Model):
 
 class Images(models.Model):
     pereval = models.ForeignKey('Added', on_delete=models.CASCADE, related_name='images')
-    img = models.URLField()
+    data = models.URLField()
     title = models.CharField(max_length=100)
 
     def __str__(self):
-        return f"{self.title} - {self.img}"
+        return f"{self.title} - {self.data}"
+
