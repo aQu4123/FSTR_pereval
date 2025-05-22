@@ -61,7 +61,6 @@ PATCH  `/api/submitData/<id>/` - Обновить перевал (если statu
         "longitude": 7.1525,
         "height": 1200.0
     },
-    "status": "new",
     "level": {
         "winter": "",
         "summer": "1А",
