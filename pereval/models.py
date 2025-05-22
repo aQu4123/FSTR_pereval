@@ -11,6 +11,7 @@ class User(models.Model):
     def __str__(self):
         return f"{self.fam} {self.name}"
 
+
 class Coords(models.Model):
     latitude = models.FloatField(verbose_name='Широта')
     longitude = models.FloatField(verbose_name='Долгота')
@@ -44,11 +45,6 @@ class Added(models.Model):
     other_titles = models.CharField(max_length=100, verbose_name='Другие названия')
     connect = models.TextField(blank=True, verbose_name='Сопроводительный текст')
     add_time = models.DateTimeField(auto_now_add=True)
-
-    # level_winter = models.CharField(max_length=5, blank=True, verbose_name='Уровень сложности зимой')
-    # level_summer = models.CharField(max_length=5, blank=True, verbose_name='Уровень сложности летом')
-    # level_autumn = models.CharField(max_length=5, blank=True, verbose_name='Уровень сложности осенью')
-    # level_spring = models.CharField(max_length=5, blank=True, verbose_name='Уровень сложности весной')
 
     def __str__(self):
         return f"Перевал: {self.title}, Статус: {self.status}"

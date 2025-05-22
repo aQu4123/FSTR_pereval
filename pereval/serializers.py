@@ -2,7 +2,6 @@ from .models import *
 from rest_framework import serializers
 
 
-
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -37,9 +36,8 @@ class AddedSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Added
-        # fields = '__all__'
         fields = [
-            'user', 'coords', 'level', 'status',
+            'id', 'user', 'coords', 'level', 'status',
             'beautyTitle', 'title', 'other_titles', 'connect',
             'add_time', 'images'
         ]

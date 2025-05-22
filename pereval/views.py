@@ -5,8 +5,8 @@ from rest_framework import status
 from .serializers import AddedSerializer, AddedDetailSerializer
 from .models import Added
 
-class SubmitData(APIView):
 
+class SubmitData(APIView):
     def post(self, request):
         try:
             serializer = AddedSerializer(data=request.data)
@@ -66,8 +66,8 @@ class SubmitData(APIView):
                 status=status.HTTP_500_INTERNAL_SERVER_ERROR
             )
 
-class SubmitDataDetail(APIView):
 
+class SubmitDataDetail(APIView):
     def get(self, request, pk):
         try:
             pereval = Added.objects.get(pk=pk)
